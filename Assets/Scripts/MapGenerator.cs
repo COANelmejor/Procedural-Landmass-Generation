@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
-    public enum DrawMode
-    {
-        NoiseMap, ColorMap
-    }
+    public enum DrawMode {NoiseMap, ColorMap, Mesh}
     public DrawMode drawMode;
 
     public int mapWidth;
@@ -22,6 +19,7 @@ public class MapGenerator : MonoBehaviour
     public int seed;
     public Vector2 offset;
 
+    public float heightMultiplier;
     public bool autoUpdate;
     public TerrainType[] regions;
     public void GenerateMap()
@@ -35,7 +33,7 @@ public class MapGenerator : MonoBehaviour
                 float currentHeight = noiseMap[x, y];
                 for (int r = 0; r < regions.Length; r++)
                 {
-                    if(currentHeight <= regions[r].height)
+                    if(currentHeight < regions[r].height)
                     {
                         colorMap[x * mapWidth + y] = regions[r].color;
                         break;
@@ -51,6 +49,9 @@ public class MapGenerator : MonoBehaviour
         } else if (drawMode == DrawMode.ColorMap)
         {
             display.DrawTexture(TextureGenerator.TextureFromColorMap(colorMap, mapWidth, mapHeight));
+        } else if (drawMode == DrawMode.Mesh)
+        {
+            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, heightMultiplier), TextureGenerator.TextureFromColorMap(colorMap, mapWidth, mapHeight));
         }
     }
 
