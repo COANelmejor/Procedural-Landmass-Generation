@@ -1,14 +1,13 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
-public class MapDisplay: MonoBehaviour {
+public class MapDisplay : MonoBehaviour {
 
     public Renderer textureRender;
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
 
     public void DrawTexture(Texture2D texture) {
-
         textureRender.sharedMaterial.mainTexture = texture;
         textureRender.transform.localScale = new Vector3(texture.width, 1, texture.height);
     }
@@ -17,5 +16,4 @@ public class MapDisplay: MonoBehaviour {
         meshFilter.sharedMesh = meshData.CreateMesh();
         meshRenderer.sharedMaterial.mainTexture = texture;
     }
-    
 }
