@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class EndlessTerrain : MonoBehaviour {
 
     public const float maxViewDistance = 450;
+    public LODInfo[] detailLevels;
+
     public Transform viewer;
     public Material mapMaterial;
 
@@ -78,7 +80,7 @@ public class EndlessTerrain : MonoBehaviour {
         }
 
         void OnMapDataReceived(MapData mapData) {
-            mapGenerator.RequestMeshData(mapData, OnMeshDataReceived);
+            // mapGenerator.RequestMeshData(mapData, OnMeshDataReceived);
         }
 
         void OnMeshDataReceived(MeshData meshData) {
@@ -98,5 +100,32 @@ public class EndlessTerrain : MonoBehaviour {
         public bool IsVisible() {
             return meshObject.activeSelf;
         }
+
+    }
+    class LODMesh {
+        public Mesh mesh;
+        public bool hasRequestedMesh;
+        public bool hasMesh;
+        int lod;
+
+        public LODMesh (int lod) {
+            this.lod = lod;
+        }
+
+        void OnMeshDataReceived(MeshData meshData) {
+            mesh = meshData.CreateMesh();
+            hasMesh = true;
+        }
+
+        public void RequestMesh(MapData mapdata) {
+            hasRequestedMesh = true;
+            mapGenerator.RequestMeshData(mapdata, lod, OnMeshDataReceived);
+        }
+    }
+
+    [System.Serializable]
+    public struct LODInfo {
+        public int lod;
+        public float visibleDistanceThreshold;
     }
 }
