@@ -9,6 +9,8 @@ public class MapGenerator : MonoBehaviour {
     public enum DrawMode { NoiseMap, ColorMap, Mesh };
     public DrawMode drawMode;
 
+    public Noise.NormalizeMode normalizeMode;
+
     public const int mapChunkSize = 241;
     [Range(0, 6)]
     public int editorPreviewLOD;
@@ -91,15 +93,16 @@ public class MapGenerator : MonoBehaviour {
     }
 
     MapData GenerateMapData(Vector2 centre) {
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, centre + offset);
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, centre + offset, normalizeMode);
 
         Color[] colorMap = new Color[mapChunkSize * mapChunkSize];
         for (int y = 0; y < mapChunkSize; y++) {
             for (int x = 0; x < mapChunkSize; x++) {
                 float currentHeight = noiseMap[x, y];
                 for (int r = 0; r < regions.Length; r++) {
-                    if (currentHeight <= regions[r].height) {
+                    if (currentHeight >= regions[r].height) {
                         colorMap[y * mapChunkSize + x] = regions[r].color;
+                    } else {
                         break;
                     }
                 }
@@ -132,7 +135,7 @@ public class MapGenerator : MonoBehaviour {
 [System.Serializable]
 public struct TerrainType {
     public string name;
-    [Range(0, 1)]
+    [Range(0, 5)]
     public float height;
     public Color color;
 }
